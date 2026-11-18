@@ -1,0 +1,24 @@
+metadata:
+  id: "CKV2_FINOPS_003"
+  name: "Ensure GCP resources have mandatory FinOps labels (environment, owner, cost_center)"
+  category: "GENERAL_SECURITY"
+definition:
+  and:
+    - cond_type: "attribute"
+      resource_types:
+        - "google_compute_instance"
+        - "google_compute_disk"
+      attribute: "labels.environment"
+      operator: "exists"
+    - cond_type: "attribute"
+      resource_types:
+        - "google_compute_instance"
+        - "google_compute_disk"
+      attribute: "labels.owner"
+      operator: "exists"
+    - cond_type: "attribute"
+      resource_types:
+        - "google_compute_instance"
+        - "google_compute_disk"
+      attribute: "labels.cost_center"
+      operator: "exists"

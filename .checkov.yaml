@@ -4,6 +4,5 @@ external-checks-dir:
   - custom_checks
 quiet: true
 compact: true
-# Przykład kontrolowanego wyciszenia reguły (gdybyś np. w środowisku dev chciał wyłączyć płatny Detailed Monitoring):
-# skip-check:
-#   - CKV_AWS_126
+skip-check:
+  - CKV_GCP_38

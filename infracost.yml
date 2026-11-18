@@ -1,4 +1,11 @@
 version: 0.1
 projects:
-  - path: .
-    usage_file: infracost-usage.yml
+  - path: aws
+    name: aws-prod-eu-central-1
+    usage_file: aws/infracost-usage.yml
+
+  - path: azure
+    name: azure-prod-westeurope
+
+  - path: gcp
+    name: gcp-prod-europe-west3

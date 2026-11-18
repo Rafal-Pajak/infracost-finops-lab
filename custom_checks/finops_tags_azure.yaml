@@ -1,0 +1,27 @@
+metadata:
+  id: "CKV2_FINOPS_002"
+  name: "Ensure Azure resources have mandatory FinOps tags (Environment, Owner, CostCenter)"
+  category: "GENERAL_SECURITY"
+definition:
+  and:
+    - cond_type: "attribute"
+      resource_types:
+        - "azurerm_linux_virtual_machine"
+        - "azurerm_managed_disk"
+        - "azurerm_resource_group"
+      attribute: "tags.Environment"
+      operator: "exists"
+    - cond_type: "attribute"
+      resource_types:
+        - "azurerm_linux_virtual_machine"
+        - "azurerm_managed_disk"
+        - "azurerm_resource_group"
+      attribute: "tags.Owner"
+      operator: "exists"
+    - cond_type: "attribute"
+      resource_types:
+        - "azurerm_linux_virtual_machine"
+        - "azurerm_managed_disk"
+        - "azurerm_resource_group"
+      attribute: "tags.CostCenter"
+      operator: "exists"
