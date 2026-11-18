@@ -1,0 +1,16 @@
+repos:
+  - repo: local
+    hooks:
+      - id: checkov-finops-security
+        name: Checkov Security & FinOps Tagging Gate
+        entry: checkov -d . --external-checks-dir custom_checks --quiet --compact
+        language: system
+        pass_filenames: false
+        files: \.tf$
+
+      - id: infracost-diff-check
+        name: Infracost Cost & Policy Scan
+        entry: bash -c 'infracost scan . && infracost inspect --group-by resource'
+        language: system
+        pass_filenames: false
+        files: \.tf$

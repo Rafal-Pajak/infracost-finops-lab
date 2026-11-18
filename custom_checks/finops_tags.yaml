@@ -1,0 +1,30 @@
+metadata:
+  id: "CKV2_FINOPS_001"
+  name: "Ensure AWS resources have mandatory FinOps cost allocation tags (Environment, Owner, CostCenter)"
+  category: "GENERAL_SECURITY"
+definition:
+  and:
+    - cond_type: "attribute"
+      resource_types:
+        - "aws_instance"
+        - "aws_nat_gateway"
+        - "aws_ebs_volume"
+        - "aws_s3_bucket"
+      attribute: "tags.Environment"
+      operator: "exists"
+    - cond_type: "attribute"
+      resource_types:
+        - "aws_instance"
+        - "aws_nat_gateway"
+        - "aws_ebs_volume"
+        - "aws_s3_bucket"
+      attribute: "tags.Owner"
+      operator: "exists"
+    - cond_type: "attribute"
+      resource_types:
+        - "aws_instance"
+        - "aws_nat_gateway"
+        - "aws_ebs_volume"
+        - "aws_s3_bucket"
+      attribute: "tags.CostCenter"
+      operator: "exists"
