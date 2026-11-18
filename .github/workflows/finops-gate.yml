@@ -1,0 +1,41 @@
+name: Shift-Left FinOps & Security Gate
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  finops-and-security:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run Checkov (Security & FinOps Tagging)
+        uses: bridgecrewio/checkov-action@v12
+        with:
+          directory: .
+          external_checks_dir: custom_checks
+          config_file: .checkov.yaml
+
+      - name: Setup Infracost
+        uses: infracost/actions/setup@v3
+        with:
+          api-key: ${{ secrets.INFRACOST_API_KEY }}
+
+      - name: Run Infracost Scan & OPA Guardrails
+        run: |
+          infracost scan .
+          infracost inspect --json > /tmp/infracost-out.json
+          infracost inspect --group-by resource
+          curl -L -s -o /usr/local/bin/opa https://openpolicyagent.org/downloads/latest/opa_linux_amd64_static
+          chmod +x /usr/local/bin/opa
+          opa eval --format pretty -i /tmp/infracost-out.json -d policies/finops_guardrails.rego "data.infracost.deny"
+          opa eval --fail -i /tmp/infracost-out.json -d policies/finops_guardrails.rego "data.infracost.allow" > /dev/null

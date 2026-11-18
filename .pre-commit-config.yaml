@@ -3,14 +3,14 @@ repos:
     hooks:
       - id: checkov-finops-security
         name: Checkov Security & FinOps Tagging Gate
-        entry: checkov -d . --external-checks-dir custom_checks --quiet --compact
+        entry: checkov
         language: system
         pass_filenames: false
         files: \.tf$
 
-      - id: infracost-diff-check
-        name: Infracost Cost & Policy Scan
-        entry: bash -c 'infracost scan . && infracost inspect --group-by resource'
+      - id: infracost-opa-guardrails
+        name: Infracost Multi-Cloud Cost & OPA Policy Gate
+        entry: bash -c 'infracost scan . && infracost inspect --json > /tmp/infracost-out.json && opa eval --format pretty -i /tmp/infracost-out.json -d policies/finops_guardrails.rego "data.infracost.deny" && opa eval --fail -i /tmp/infracost-out.json -d policies/finops_guardrails.rego "data.infracost.allow" > /dev/null'
         language: system
         pass_filenames: false
         files: \.tf$

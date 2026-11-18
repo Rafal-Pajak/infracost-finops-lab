@@ -45,7 +45,7 @@ resource "azurerm_linux_virtual_machine" "vm" {
   name                            = "vm-app-prod-01"
   resource_group_name             = azurerm_resource_group.rg.name
   location                        = azurerm_resource_group.rg.location
-  size                            = "Standard_D2s_v5"
+  size                            = "Standard_D662s_v5"
   admin_username                  = "azureuser"
   disable_password_authentication = true
   allow_extension_operations      = false
