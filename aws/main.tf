@@ -75,3 +75,21 @@ resource "aws_nat_gateway" "nat" {
     Name = "main-nat-gw"
   })
 }
+
+resource "aws_db_instance" "uncompliant_prod_db" {
+  identifier              = "prod-core-banking-db"
+  engine                  = "postgres"
+  engine_version          = "15.4"
+  instance_class          = "db.m5.large"
+  allocated_storage       = 100
+  multi_az                = true
+  storage_encrypted       = false
+  backup_retention_period = 0
+  skip_final_snapshot     = true
+
+  tags = {
+    Environment = "prod"
+    Owner       = "core-banking"
+    CostCenter  = "CC-901"
+  }
+}
