@@ -8,7 +8,7 @@ get_cost(res) := to_number(res.monthlyCost) if {
   res.monthly_cost
 }
 
-# Reguła 1: Blokuj pojedynczy zasób (posiadający resourceType), jeśli kosztuje > $80/mies.
+# Reguła 1A: Limit $80/mies. na pojedynczy zasób (format Infracost CLI v2 - lokalny)
 deny contains msg if {
   walk(input, [_, res])
   is_object(res)
@@ -22,7 +22,19 @@ deny contains msg if {
   )
 }
 
-# Reguła 2: Blokuj cały projekt, jeśli jego suma przekracza $150/mies.
+# Reguła 1B: Limit $80/mies. na pojedynczy zasób (format Infracost CLI v0.10.x - GitHub Actions)
+deny contains msg if {
+  some project in input.projects
+  some res in project.breakdown.resources
+  cost := get_cost(res)
+  cost > 80
+  msg := sprintf(
+    "FINOPS GUARDRAIL (CI): Zasób '%s' w projekcie '%s' kosztuje $%v/mies., co przekracza limit $80/mies.",
+    [res.name, project.name, cost]
+  )
+}
+
+# Reguła 2: Limit $150/mies. na cały projekt
 deny contains msg if {
   some project in input.projects
   cost := get_cost(project)
@@ -33,7 +45,7 @@ deny contains msg if {
   )
 }
 
-# Reguła pomocnicza dla CI/CD: zwraca true tylko wtedy, gdy brak naruszeń w deny
+# Reguła 3: Brama logiczna dla CI/CD (zwraca true tylko przy 0 naruszeń)
 allow if {
   count(deny) == 0
 }
