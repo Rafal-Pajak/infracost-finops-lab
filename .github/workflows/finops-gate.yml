@@ -22,7 +22,7 @@ jobs:
         uses: bridgecrewio/checkov-action@v12
         with:
           directory: .
-          external_checks_dir: custom_checks
+          external_checks_dirs: custom_checks
           config_file: .checkov.yaml
 
       - name: Setup Infracost
