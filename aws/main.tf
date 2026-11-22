@@ -75,3 +75,58 @@ resource "aws_nat_gateway" "nat" {
     Name = "main-nat-gw"
   })
 }
+
+resource "aws_db_parameter_group" "postgres_audit" {
+  name   = "prod-core-banking-pg15"
+  family = "postgres15"
+
+  parameter {
+    name  = "rds.force_ssl"
+    value = "1"
+  }
+
+  parameter {
+    name  = "log_statement"
+    value = "all"
+  }
+
+  parameter {
+    name  = "log_min_duration_statement"
+    value = "1000"
+  }
+
+  tags = {
+    Environment = "prod"
+    Owner       = "core-banking"
+    CostCenter  = "CC-901"
+  }
+}
+
+resource "aws_db_instance" "compliant_prod_db" {
+  identifier                          = "prod-core-banking-db"
+  engine                              = "postgres"
+  engine_version                      = "15.4"
+  instance_class                      = "db.t4g.micro"
+  allocated_storage                   = 20
+  multi_az                            = true
+  storage_encrypted                   = true
+  kms_key_id                          = "arn:aws:kms:eu-central-1:123456789012:key/1234abcd-12ab-34cd-56ef-1234567890ab"
+  backup_retention_period             = 7
+  deletion_protection                 = true
+  auto_minor_version_upgrade          = true
+  iam_database_authentication_enabled = true
+  performance_insights_enabled        = true
+  performance_insights_kms_key_id     = "arn:aws:kms:eu-central-1:123456789012:key/1234abcd-12ab-34cd-56ef-1234567890ab"
+  monitoring_interval                 = 60
+  monitoring_role_arn                 = "arn:aws:iam::123456789012:role/rds-monitoring-role"
+  enabled_cloudwatch_logs_exports     = ["postgresql", "upgrade"]
+  parameter_group_name                = aws_db_parameter_group.postgres_audit.name
+  copy_tags_to_snapshot               = true
+  skip_final_snapshot                 = true
+
+  tags = {
+    Environment = "prod"
+    Owner       = "core-banking"
+    CostCenter  = "CC-901"
+  }
+}
