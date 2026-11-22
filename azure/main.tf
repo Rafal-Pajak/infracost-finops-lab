@@ -45,7 +45,7 @@ resource "azurerm_linux_virtual_machine" "vm" {
   name                            = "vm-app-prod-01"
   resource_group_name             = azurerm_resource_group.rg.name
   location                        = azurerm_resource_group.rg.location
-  size                            = "Standard_D662s_v5"
+  size                            = "Standard_B2s"
   admin_username                  = "azureuser"
   disable_password_authentication = true
   allow_extension_operations      = false
@@ -67,6 +67,42 @@ resource "azurerm_linux_virtual_machine" "vm" {
     offer     = "0001-com-ubuntu-server-jammy"
     sku       = "22_04-lts-gen2"
     version   = "latest"
+  }
+
+  tags = local.common_tags
+}
+
+resource "azurerm_key_vault" "core_kv" {
+  name                            = "kv-finops-dora-prod-01"
+  location                        = azurerm_resource_group.rg.location
+  resource_group_name             = azurerm_resource_group.rg.name
+  tenant_id                       = "00000000-0000-0000-0000-000000000000"
+  sku_name                        = "standard"
+  purge_protection_enabled        = true
+  soft_delete_retention_days      = 90
+  enabled_for_disk_encryption     = true
+  enable_rbac_authorization       = true
+  public_network_access_enabled   = false
+
+  network_acls {
+    default_action = "Deny"
+    bypass         = "AzureServices"
+  }
+
+  tags = local.common_tags
+}
+
+resource "azurerm_private_endpoint" "kv_pe" {
+  name                = "pe-kv-finops-dora-01"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  subnet_id           = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg/providers/Microsoft.Network/virtualNetworks/vnet/subnets/default"
+
+  private_service_connection {
+    name                           = "psc-kv-finops-dora-01"
+    private_connection_resource_id = azurerm_key_vault.core_kv.id
+    is_manual_connection           = false
+    subresource_names              = ["vault"]
   }
 
   tags = local.common_tags

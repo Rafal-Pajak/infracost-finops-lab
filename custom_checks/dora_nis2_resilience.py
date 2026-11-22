@@ -18,4 +18,29 @@ class DoraRdsBackupAndEncryptionCheck(BaseResourceCheck):
         return CheckResult.FAILED
 
 
-check = DoraRdsBackupAndEncryptionCheck()
+class DoraAzureKeyVaultResilienceCheck(BaseResourceCheck):
+    def __init__(self):
+        name = "DORA Art.9/11 & NIS2: Azure Key Vault musi mieć włączony purge_protection, soft_delete >= 7 dni oraz network_acls default_action = Deny"
+        id = "CKV_DORA_002"
+        supported_resources = ["azurerm_key_vault"]
+        categories = [CheckCategories.BACKUP_AND_RECOVERY, CheckCategories.ENCRYPTION, CheckCategories.NETWORKING]
+        super().__init__(name=name, id=id, categories=categories, supported_resources=supported_resources)
+
+    def scan_resource_conf(self, conf):
+        purge_protection = conf.get("purge_protection_enabled", [False])[0]
+        retention = conf.get("soft_delete_retention_days", [0])[0]
+        network_acls = conf.get("network_acls", [{}])[0]
+        default_action = network_acls.get("default_action", ["Allow"])[0] if isinstance(network_acls, dict) else "Allow"
+
+        if (
+            purge_protection is True
+            and isinstance(retention, int)
+            and retention >= 7
+            and default_action == "Deny"
+        ):
+            return CheckResult.PASSED
+        return CheckResult.FAILED
+
+
+check_rds = DoraRdsBackupAndEncryptionCheck()
+check_kv = DoraAzureKeyVaultResilienceCheck()
