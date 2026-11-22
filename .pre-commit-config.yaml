@@ -3,7 +3,7 @@ repos:
     hooks:
       - id: checkov-finops-security
         name: Checkov Security & FinOps Tagging Gate
-        entry: checkov
+        entry: .venv/bin/checkov
         language: system
         pass_filenames: false
         files: \.tf$
