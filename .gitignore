@@ -3,3 +3,9 @@
 *.tfstate*
 infracost-base.json
 .vscode/
+
+# Terraform plan artifacts & lockfiles
+*.tfplan
+tfplan
+tfplan.json
+.terraform.lock.hcl
