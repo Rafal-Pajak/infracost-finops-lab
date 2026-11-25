@@ -73,6 +73,7 @@ resource "azurerm_linux_virtual_machine" "vm" {
 }
 
 resource "azurerm_key_vault" "core_kv" {
+  public_network_access_enabled = false
   name                            = "kv-finops-dora-prod-01"
   location                        = azurerm_resource_group.rg.location
   resource_group_name             = azurerm_resource_group.rg.name
@@ -82,7 +83,7 @@ resource "azurerm_key_vault" "core_kv" {
   soft_delete_retention_days      = 90
   enabled_for_disk_encryption     = true
   enable_rbac_authorization       = true
-  public_network_access_enabled   = false
+  public_network_a6ccess_enabled   = false
 
   network_acls {
     default_action = "Deny"
