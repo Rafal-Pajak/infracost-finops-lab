@@ -9,3 +9,35 @@ infracost-base.json
 tfplan
 tfplan.json
 .terraform.lock.hcl
+
+# Terraform state, plans & local cache
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+*.tfplan
+*.tfplan.*
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
+
+# Sensitive variable files (keep *.tfvars.example tracked)
+*.tfvars
+*.tfvars.json
+!*.tfvars.example
+
+# Python virtual environments & cache
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+
+# Local secrets & environment files
+.env
+.env.*
+!.env.example
+*.binary
